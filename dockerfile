@@ -25,7 +25,7 @@ RUN MAX_JOBS=4 python3 -m pip install --no-cache-dir flash-attn==2.6.3 --no-buil
 # Now copy the rest of the app
 COPY requirements.txt .
 COPY app.py .
-COPY reference_voice.wav .
+#COPY reference_voice.wav .
 
 # Explicitly install pydub + the rest from requirements.txt
 RUN python3 -m pip install --no-cache-dir pydub==0.25.1

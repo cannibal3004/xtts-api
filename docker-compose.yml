@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - ./tts_cache:/root/.local/share/tts
+      - ./reference_voice.wav:/app/reference_voice.wav:ro
       - ./app.py:/app/app.py:ro              # Optional: live editing of app.py
     deploy:
       resources:
