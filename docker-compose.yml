@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  parler-tts-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xtts-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./tts_cache:/root/.local/share/tts
+      - ./app.py:/app/app.py:ro              # Optional: live editing of app.py
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - COQUI_TOS_AGREED=1
+      - TRANSFORMERS_VERBOSITY=info
+
+# No 'volumes:' top-level section needed for bind mounts
