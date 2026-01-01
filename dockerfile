@@ -4,6 +4,10 @@ RUN apt-get update && apt-get install -y \
     python3.10 \
     python3.10-dev \
     python3-pip \
+    build-essential \
+    libaio-dev \
+    openmpi-bin \
+    libopenmpi-dev \
     ffmpeg \
     git \
     ninja-build \
@@ -12,6 +16,8 @@ RUN apt-get update && apt-get install -y \
 RUN python3 -m pip install --upgrade pip
 
 WORKDIR /app
+
+RUN mkdir -p /app/voices
 
 # Install torch first (CUDA-matched)
 RUN python3 -m pip install --no-cache-dir torch==2.4.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu124
@@ -23,9 +29,9 @@ RUN python3 -m pip install --no-cache-dir packaging ninja psutil setuptools whee
 RUN MAX_JOBS=4 python3 -m pip install --no-cache-dir flash-attn==2.6.3 --no-build-isolation
 
 # Now copy the rest of the app
+COPY default.wav ./voices/default.wav
 COPY requirements.txt .
 COPY app.py .
-#COPY reference_voice.wav .
 
 # Explicitly install pydub + the rest from requirements.txt
 RUN python3 -m pip install --no-cache-dir pydub==0.25.1

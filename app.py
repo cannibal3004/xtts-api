@@ -12,9 +12,9 @@ app = FastAPI()
 
 # ==================== CONFIGURABLE SETTINGS ====================
 MODEL_NAME = "tts_models/multilingual/multi-dataset/xtts_v2"
-REFERENCE_WAV = "/app/reference_voice.wav"  # Path inside container
+REFERENCE_WAV = "/app/voices/reference_voice.wav"  # Path inside container
 LANGUAGE = "en"
-USE_HALF_PRECISION = True
+USE_HALF_PRECISION = False  # Set to True if using a GPU with limited VRAM
 OUTPUT_FORMAT = "mp3"
 MP3_BITRATE = "128K"
 # ==============================================================

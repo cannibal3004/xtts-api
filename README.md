@@ -26,7 +26,7 @@ A FastAPI-based text-to-speech (TTS) service powered by [Coqui TTS](https://gith
 ### Option 1: Docker Compose (Recommended)
 
 1. **Prepare your reference voice file**:
-   - Place a `reference_voice.wav` file in the project root directory
+   - Place a `default.wav` file under `voices/` (i.e., `voices/default.wav`)
    - This WAV file should be a clear sample of the voice you want to clone (typically 5-10 seconds)
 
 2. **Build and run**:
@@ -47,7 +47,7 @@ A FastAPI-based text-to-speech (TTS) service powered by [Coqui TTS](https://gith
    ```
 
 2. **Prepare reference voice**:
-   - Place `reference_voice.wav` in the project root
+   - Place `default.wav` under `voices/` (i.e., `voices/default.wav`)
 
 3. **Run the server**:
    ```bash
@@ -60,7 +60,7 @@ Edit the following variables in `app.py` to customize behavior:
 
 ```python
 MODEL_NAME = "tts_models/multilingual/multi-dataset/xtts_v2"  # TTS model
-REFERENCE_WAV = "/app/reference_voice.wav"  # Path to reference voice
+REFERENCE_WAV = "/app/voices/default.wav"  # Path to reference voice inside container
 LANGUAGE = "en"  # Output language code (e.g., "en", "es", "fr", "de")
 USE_HALF_PRECISION = True  # Use FP16 for faster inference
 OUTPUT_FORMAT = "mp3"  # "mp3" or "wav"
@@ -88,9 +88,12 @@ Generates audio from input text.
 **Request**:
 ```json
 {
-  "text": "Hello, this is a test of the text to speech system."
+   "text": "Hello, this is a test of the text to speech system.",
+   "voice": "/app/voices/default.wav"
 }
 ```
+
+`voice` is optional; if omitted, the default voice at `REFERENCE_WAV` is used. Paths must be valid inside the container (for Docker) or local process (for bare-metal runs).
 
 **Response**:
 - Content-Type: `audio/mpeg` (if MP3) or `audio/wav` (if WAV)
@@ -131,7 +134,8 @@ Once running, visit:
 ├── requirements.txt          # Python dependencies
 ├── Dockerfile               # Docker image configuration
 ├── docker-compose.yml       # Docker Compose orchestration
-├── reference_voice.wav      # Reference voice for cloning (create this)
+├── voices/                  # Directory for reference voices
+│   └── default.wav          # Default voice (provide your own)
 └── README.md               # This file
 ```
 
