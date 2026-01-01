@@ -35,6 +35,7 @@ COPY app.py .
 
 # Explicitly install pydub + the rest from requirements.txt
 RUN python3 -m pip install --no-cache-dir pydub==0.25.1
+RUN python3 -m pip install --no-cache-dir deepspeed==0.14.0 --no-build-isolation
 RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000

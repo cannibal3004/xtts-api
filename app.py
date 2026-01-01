@@ -12,7 +12,7 @@ app = FastAPI()
 
 # ==================== CONFIGURABLE SETTINGS ====================
 MODEL_NAME = "tts_models/multilingual/multi-dataset/xtts_v2"
-REFERENCE_WAV = "/app/voices/reference_voice.wav"  # Path inside container
+REFERENCE_WAV = "default.wav"  # Path inside container
 LANGUAGE = "en"
 USE_HALF_PRECISION = False  # Set to True if using a GPU with limited VRAM
 OUTPUT_FORMAT = "mp3"
@@ -21,12 +21,18 @@ MP3_BITRATE = "128K"
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-print(f"Loading XTTS-v2 on {device}")
-tts = TTS(MODEL_NAME, progress_bar=True)  # Remove gpu= parameter
-
-# Manually move model to device (new recommended way)
+print(f"Loading XTTS-v2 on {device} with DeepSpeed")
+tts = TTS(MODEL_NAME, progress_bar=False)
 tts.to(device)
 
+# Correct DeepSpeed activation for coqui-tts
+if device == "cuda":
+    try:
+        tts.synthesizer.tts_model.cuda()  # Ensure model on GPU
+        tts.synthesizer.tts_model.inference_deepspeed = True  # This is the flag
+        print("DeepSpeed inference enabled")
+    except Exception as e:
+        print(f"DeepSpeed not available: {e}")
 class TextInput(BaseModel):
     text: str
 
@@ -36,7 +42,7 @@ async def generate_audio(input: TextInput):
         temp_wav = "/tmp/output.wav"
         tts.tts_to_file(
             text=input.text,
-            speaker_wav=REFERENCE_WAV,
+            speaker_wav="/app/voices/" + REFERENCE_WAV,
             language=LANGUAGE,
             file_path=temp_wav,
             speed=0.98,              # 0.9-1.1; adjust if too fast/slow
